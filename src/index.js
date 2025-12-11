@@ -17,13 +17,13 @@ const { buffer } = require('node:stream/consumers');
 
 const socket = dgram.createSocket('udp4');
 
+const broadcastIp = '255.255.255.255';
+const MAC = 'C8:7F:54:A0:D5:8D';
+const broadcastPort = 9;
+
 socket.bind(() => {
     socket.setBroadcast(true);
 });
-
-const broadcastIp = '192.168.1.255';
-const MAC = 'C8:7F:54:A0:D5:8D';
-const broadcastPort = 9;
 
 function makeMagicPacket(mac) {
     const macBytes = mac
@@ -41,8 +41,6 @@ function makeMagicPacket(mac) {
 
     return packet;
 }
-
-const message = Buffer.from("Hello, world!");
 
 socket.on('error', (errorMessage) => {
     console.log(errorMessage);
