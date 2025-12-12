@@ -19,6 +19,7 @@ yarn-error.log*
 .env.production
 .env.local
 .env.*.local
+src/config.json
 
 # Editor/IDE specific files
 .vscode/ # Visual Studio Code
