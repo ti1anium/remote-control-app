@@ -1,14 +1,23 @@
 const dgram = require('dgram');
+const fs = require('fs');
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const { createConfigFile, parseConfigFile } = require('./lib/config-manager');
 
 app.on('ready', () => {
     const window = new BrowserWindow({
         width: 800,
         height: 600,
         resizable: false,
-        autoHideMenuBar: true
+        autoHideMenuBar: true,
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, "preload.js")
+        }
     });
+
+    createConfigFile();
 
     window.loadFile(path.join(__dirname, 'ui', 'index.html'));
 });
