@@ -4,12 +4,9 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "electron ./src/index.js"
+    "start": "node ./src/index.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "electron": "^39.2.4"
-  }
+  "license": "ISC"
 }
