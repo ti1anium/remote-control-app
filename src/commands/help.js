@@ -4,7 +4,7 @@ module.exports = new TerminalCommand (
     "help",
     "shows all commands",
     [],
-    async (text) => {
+    async () => {
         const commands = requireAllCommands();
         
         commands.forEach((v) => {
