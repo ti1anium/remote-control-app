@@ -1,8 +1,23 @@
-function createPacket (type, MAC, deviceName) {
+function createBroadcastPacket (MAC, deviceName) {
     const dataObject = {
-        PacketType: type,
+        PacketType: "broadcast",
         MAC: MAC,
         DeviceName: deviceName
+    };
+
+    const jsonString = JSON.stringify(dataObject);
+
+    const packet = Buffer.from(jsonString, 'utf8');
+
+    return packet;
+}
+
+function createActionPacket (MAC, targetMAC, action) {
+    const dataObject = {
+        PacketType: "action",
+        MAC: MAC,
+        Target: targetMAC,
+        Action: action
     };
 
     const jsonString = JSON.stringify(dataObject);
@@ -20,4 +35,4 @@ function extractData (packet) {
     return dataObject;
 }
 
-module.exports = { createPacket, extractData }
+module.exports = { createActionPacket, createBroadcastPacket, extractData }

@@ -1,15 +1,19 @@
 const { createInterface } = require('readline');
 const { requireAllCommands } = require('./lib/command.js');
-const { Service } = require('node-windows');
-const dgram = require('dgram');
+//const { Service } = require('node-windows');
 const path = require('path');
+const network = require('./lib/network.js');
 
+// looks for all commands in commands folder
 const commands = requireAllCommands();
 
-const svc = new Service({
-    name: "RCA Listener",
-    description: "Background worker for Remote Control App",
-    script: path.join(__dirname, 'listener.js')
+// !!! Works only on Windows, Linux support must be implemented !!!
+// sets up and updates Windows Service
+// used to listen for parent node all time since pc start-up
+/*const svc = new Service({
+  name: "RCA Listener",
+  description: "Background worker for Remote Control App",
+  script: path.join(__dirname, 'listener.js')
 });
 
 svc.on('install', () => {
@@ -39,42 +43,36 @@ svc.exists((exists) => {
     console.log('Background Service does not exist, installing');
     svc.install();
   }
-});
+});*/
 
-const socket = dgram.createSocket('udp4');
-const broadcastPort = 9;
-const broadcastAdress = '255.255.255.255';
-
-socket.bind(broadcastPort, () => {
-  socket.setBroadcast(true);
-})
-
-module.exports = { svc, socket, broadcastAdress };
+network.initialize();
+network.getMAC();
 
 console.log("Type 'e' to exit");
 
+// create read interface to interact with application and to execute loaded commands
 function question() {
-    const readInterface = createInterface({ input: process.stdin, output: process.stdout });
+  const readInterface = createInterface({ input: process.stdin, output: process.stdout });
 
-    readInterface.question('>>> ', (response) => {
-        if (response === 'e') {
-            readInterface.close();
-            return;
-        }
+  readInterface.question('>>> ', (response) => {
+    if (response === 'e') {
+      readInterface.close();
+      return;
+    }
 
-        const splittedString = response.split(' ');
-        const commandName = splittedString[0];
-        const args = splittedString.slice(1);
+    const splittedString = response.split(' ');
+    const commandName = splittedString[0];
+    const args = splittedString.slice(1);
 
-        if (commands.has(commandName)) {
-            commands.get(commandName).Execute(args);
-        } else {
-            console.log("Wrong command");
-        }
+    if (commands.has(commandName)) {
+      commands.get(commandName).Execute(args);
+    } else {
+      console.log("Wrong command");
+    }
 
-        readInterface.close();
-        question();
-    });
+    readInterface.close();
+    question();
+  });
 }
 
 question();

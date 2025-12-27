@@ -1,3 +1,8 @@
+/*
+    help.js
+    this command should display all available commands
+*/
+
 const { TerminalCommand, requireAllCommands } = require('../lib/command.js');
 
 module.exports = new TerminalCommand (
