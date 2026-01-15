@@ -2,11 +2,22 @@
   "name": "remote-control-app",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node ./src/index.js"
+    "copy-assets": "cpy \"src/**/*\" dist --ignore \"**/*.{ts,js}\" --parents --cwd .",
+    "build": "npx tsc && npm run copy-assets",
+    "dev": "npm run build && npm run start",
+    "start": "electron dist/index.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/electron": "^1.6.12",
+    "@types/node": "^25.0.8",
+    "cpy-cli": "^6.0.0",
+    "electron": "^39.2.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
 }

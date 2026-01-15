@@ -4,6 +4,7 @@ node_modules/
 # Build artifacts
 dist/
 build/
+out/
 .next/ # For Next.js projects
 out/ # For Nuxt.js projects
 
@@ -12,6 +13,10 @@ out/ # For Nuxt.js projects
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# TypeScript cache
+*.tsbuildinfo
+coverage/
 
 # Environment variables
 .env
