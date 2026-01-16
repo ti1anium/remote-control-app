@@ -19,7 +19,7 @@ let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
 let isQuitting = false;
 
-const socket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+const socket = dgram.createSocket({ type: "udp4", reuseAddr: true });
 
 app.on("ready", () => {
 	let config = configManager.getOrCreateConfigFile();
@@ -27,33 +27,41 @@ app.on("ready", () => {
 
 	function updateDevices() {
 		for (let i = 0; i < config.childNodes.length; i++) {
-			if (allDevices.findIndex((device) => device.deviceMAC === config.childNodes[i].MAC) === -1) {
+			if (
+				allDevices.findIndex(
+					(device) => device.deviceMAC === config.childNodes[i].MAC,
+				) === -1
+			) {
 				allDevices.push({
 					deviceMAC: config.childNodes[i].MAC,
 					deviceName: config.childNodes[i].name,
 					active: false,
 					ipAddress: null,
 					isChildNode: true,
-					isParentNode: false
+					isParentNode: false,
 				});
 			}
 		}
 
 		for (let i = 0; i < config.parentNodes.length; i++) {
-			if (allDevices.findIndex((device) => device.deviceMAC === config.parentNodes[i].MAC) === -1) {
+			if (
+				allDevices.findIndex(
+					(device) => device.deviceMAC === config.parentNodes[i].MAC,
+				) === -1
+			) {
 				allDevices.push({
 					deviceMAC: config.parentNodes[i].MAC,
 					deviceName: config.parentNodes[i].name,
 					active: false,
 					ipAddress: null,
 					isChildNode: false,
-					isParentNode: true
+					isParentNode: true,
 				});
 			}
 		}
 
 		if (mainWindow) {
-			mainWindow.webContents.send('update-devices', allDevices);
+			mainWindow.webContents.send("update-devices", allDevices);
 		}
 	}
 
@@ -87,7 +95,7 @@ app.on("ready", () => {
 				return false;
 			});
 
-			mainWindow.webContents.on('did-finish-load', updateDevices);
+			mainWindow.webContents.on("did-finish-load", updateDevices);
 		}
 
 		mainWindow.show();
@@ -143,9 +151,15 @@ app.on("ready", () => {
 
 	ipcMain.on("do-action", (_, MAC: string, action: string) => {});
 
-	socket.bind(networkManager.BROADCAST_PORT, "0.0.0.0", () => {
-		socket.setBroadcast(true);
-	});
+	if (os.platform() == "linux") {
+		socket.bind(0, '0.0.0.0', () => {
+			socket.setBroadcast(true);
+		});
+	} else {
+		socket.bind(networkManager.BROADCAST_PORT, () => {
+			socket.setBroadcast(true);
+		});
+	}
 
 	const deviceMAC = networkManager.getMAC();
 
