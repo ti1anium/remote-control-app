@@ -19,7 +19,7 @@ let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
 let isQuitting = false;
 
-const socket = dgram.createSocket({ type: "udp4", reuseAddr: true });
+const socket = dgram.createSocket("udp4");
 
 app.on("ready", () => {
 	let config = configManager.getOrCreateConfigFile();

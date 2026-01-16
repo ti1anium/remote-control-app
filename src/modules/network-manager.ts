@@ -52,6 +52,8 @@ function makeMagicPacket(mac: string): Buffer {
 function broadcastPacket(socket: dgram.Socket, packet: NetworkPacket) {
 	const buffer = Buffer.from(JSON.stringify(packet), "utf-8");
 
+	console.log("sending: ", packet);
+
 	socket.send(buffer, BROADCAST_PORT, BROADCAST_ADDRESS, (e) => {
 		if (e) {
 			console.log("Broadcast error: " + e);
@@ -86,10 +88,14 @@ function broadcastWakePacket(socket: dgram.Socket, MAC: string) {
 function createBroadcastListener(socket: dgram.Socket): EventEmitter {
 	const emitter = new EventEmitter();
 
+	console.log("a");
+
 	socket.on("message", (msg, rinfo) => {
 		try {
 			const str = msg.toString("utf-8");
 			const data = JSON.parse(str) as NetworkPacket;
+
+			console.log("received: ", data);
 
 			if (!data.packetType) return;
 
