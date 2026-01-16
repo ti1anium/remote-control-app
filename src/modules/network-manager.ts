@@ -92,7 +92,7 @@ function directPacket(
 function broadcastWakePacket(socket: dgram.Socket, MAC: string) {
 	const buffer = makeMagicPacket(MAC);
 
-	socket.send(buffer, BROADCAST_PORT, getBroadcastAddress(), (e) => {
+	socket.send(buffer, WAKE_PORT, getBroadcastAddress(), (e) => {
 		if (e) {
 			console.log("Wake packet broadcast error: " + e);
 		}

@@ -60,6 +60,16 @@ app.on("ready", () => {
 			}
 		}
 
+		while (true) {
+			const i = allDevices.findIndex((device) => !device.active && !device.isChildNode);
+			if (i === -1) break;
+
+			let a = allDevices.slice(0, i);
+			let b = allDevices.slice(i + 1);
+
+			allDevices = [...a, ...b];
+		}
+
 		if (mainWindow) {
 			mainWindow.webContents.send("update-devices", allDevices);
 		}
