@@ -143,7 +143,7 @@ app.on("ready", () => {
 
 	ipcMain.on("do-action", (_, MAC: string, action: string) => {});
 
-	socket.bind(0, "0.0.0.0", () => {
+	socket.bind(networkManager.BROADCAST_PORT, "0.0.0.0", () => {
 		socket.setBroadcast(true);
 	});
 
