@@ -99,9 +99,9 @@ app.on("ready", () => {
 
 	let iconPath: string;
 	if (os.platform() === "win32") {
-		iconPath = path.join(__dirname, "res", "icon.ico");
+		iconPath = path.join(__dirname, "res", "Icon.ico");
 	} else {
-		iconPath = path.join(__dirname, "res", "icon.png");
+		iconPath = path.join(__dirname, "res", "Icon.png");
 	}
 
 	const icon = nativeImage.createFromPath(iconPath);
@@ -216,7 +216,7 @@ app.on("ready", () => {
 			}
 		},
 	);
-
+	
 	setInterval(() => {
 		networkManager.broadcastPacket(socket, {
 			packetType: "fetch",

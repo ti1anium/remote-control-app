@@ -13,7 +13,20 @@ type NetworkPacket = {
 };
 
 const BROADCAST_PORT = 9;
-const BROADCAST_ADDRESS = "255.255.255.255";
+
+function getBroadcastAddress(): string {
+	const nets = os.networkInterfaces();
+	for (const name of Object.keys(nets)) {
+		for (const net of nets[name] || []) {
+			if (net.family === "IPv4" && !net.internal) {
+				const parts = net.address.split(".");
+				parts[3] = "255";
+				return parts.join(".");
+			}
+		}
+	}
+	return "255.255.255.255";
+}
 
 function getMAC(): string {
 	const interfaces = os.networkInterfaces();
@@ -54,7 +67,7 @@ function broadcastPacket(socket: dgram.Socket, packet: NetworkPacket) {
 
 	console.log("sending: ", packet);
 
-	socket.send(buffer, BROADCAST_PORT, BROADCAST_ADDRESS, (e) => {
+	socket.send(buffer, BROADCAST_PORT, getBroadcastAddress(), (e) => {
 		if (e) {
 			console.log("Broadcast error: " + e);
 		}
@@ -78,7 +91,7 @@ function directPacket(
 function broadcastWakePacket(socket: dgram.Socket, MAC: string) {
 	const buffer = makeMagicPacket(MAC);
 
-	socket.send(buffer, BROADCAST_PORT, BROADCAST_ADDRESS, (e) => {
+	socket.send(buffer, BROADCAST_PORT, getBroadcastAddress(), (e) => {
 		if (e) {
 			console.log("Wake packet broadcast error: " + e);
 		}
@@ -100,8 +113,8 @@ function createBroadcastListener(socket: dgram.Socket): EventEmitter {
 
 			emitter.emit(data.packetType, data, rinfo);
 		} catch (e) {
-            console.log("Packet processing error: " + e);
-        }
+			console.log("Packet processing error: " + e);
+		}
 	});
 
 	return emitter;
@@ -109,7 +122,7 @@ function createBroadcastListener(socket: dgram.Socket): EventEmitter {
 
 export {
 	BROADCAST_PORT,
-	BROADCAST_ADDRESS,
+	getBroadcastAddress,
 	getMAC,
 	broadcastPacket,
 	broadcastWakePacket,
