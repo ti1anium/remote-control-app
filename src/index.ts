@@ -19,7 +19,7 @@ let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
 let isQuitting = false;
 
-const socket = dgram.createSocket("udp4");
+const socket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 
 app.on("ready", () => {
 	let config = configManager.getOrCreateConfigFile();
@@ -143,7 +143,7 @@ app.on("ready", () => {
 
 	ipcMain.on("do-action", (_, MAC: string, action: string) => {});
 
-	socket.bind(networkManager.BROADCAST_PORT, () => {
+	socket.bind(0, "0.0.0.0", () => {
 		socket.setBroadcast(true);
 	});
 
