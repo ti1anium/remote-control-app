@@ -88,16 +88,15 @@ function broadcastWakePacket(socket: dgram.Socket, MAC: string) {
 function createBroadcastListener(socket: dgram.Socket): EventEmitter {
 	const emitter = new EventEmitter();
 
-	console.log("a");
-
 	socket.on("message", (msg, rinfo) => {
 		try {
 			const str = msg.toString("utf-8");
 			const data = JSON.parse(str) as NetworkPacket;
 
-			console.log("received: ", data);
-
 			if (!data.packetType) return;
+			if (data.senderMAC === getMAC()) return;
+
+			console.log("received: ", data);
 
 			emitter.emit(data.packetType, data, rinfo);
 		} catch (e) {
