@@ -12,7 +12,7 @@ type NetworkPacket = {
 	active: boolean;
 };
 
-const BROADCAST_PORT = 9;
+const BROADCAST_PORT = 40000;
 
 function getBroadcastAddress(): string {
 	const nets = os.networkInterfaces();
