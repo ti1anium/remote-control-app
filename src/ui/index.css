@@ -11,6 +11,8 @@
     --text-secondary: #afafaf;
     --hover: #2b2b2b;
     --accent-color: #0078d4;
+    --active-color: #178a00;
+    --inactive-color: #9b0000;
 }
 
 body {
@@ -115,4 +117,12 @@ ul {
 
     background: var(--background-intermediate);
     border: var(--background-secondary) solid 1px;
+}
+
+.online {
+    color: var(--active-color);
+}
+
+.offline {
+    color: var(--inactive-color);
 }

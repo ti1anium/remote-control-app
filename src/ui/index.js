@@ -14,18 +14,17 @@ function breakPair (MAC) {
 
 }
 
-function createDeviceElement (deviceName, deviceMAC, deviceIPAddress, deviceState, isParent, isChild) {
+function createDeviceElement (deviceName, deviceMAC, deviceState, isParent, isChild) {
     const main = document.createElement('div');
 
     main.innerHTML = `
         <div>
             <p class="primary-label">${deviceName}</p>
             <p class="secondary-label">MAC: ${deviceMAC}</p>
-            <p class="secondary-label">IP: ${deviceIPAddress}</p>
         </div>
         <div>
             <p class="state-label ${deviceState}">${deviceState}</p>
-            <button>${isParent ? "Break Pair" : "Make as parent node"}</button>
+            <button>${isParent ? "Break Pair" : "Make as a parent node"}</button>
         </div>
         <div style="justify-content: end; display: ${isChild ? "flex" : "none"}">
             <button>Wake</button>
@@ -40,6 +39,18 @@ function createDeviceElement (deviceName, deviceMAC, deviceIPAddress, deviceStat
     return main;
 }
 
-window.electronAPI.onUpdateData((parentNodes, childNodes) => {
+window.electronAPI.onUpdateData((devices) => {
+    foundContainer.innerHTML = '';
 
+    for (let i = 0; i < devices.length; i++) {
+        let element = createDeviceElement(
+            devices[i].deviceName,
+            devices[i].deviceMAC,
+            devices[i].active ? "online" : "offline",
+            devices[i].isParentNode,
+            devices[i].isChildNode
+        );
+
+        foundContainer.appendChild(element);
+    }
 });

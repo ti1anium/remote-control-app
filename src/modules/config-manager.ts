@@ -1,135 +1,141 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as os from 'os';
+import * as path from "path";
+import * as fs from "fs";
+import * as os from "os";
 
 type ConfigurationNode = {
-    MAC: string,
-    name: string
-}
-
-type DefaultConfiguration = {
-    parentNodes: ConfigurationNode[],
-    childNodes: ConfigurationNode[],
-    deviceName: string
-}
-
-function getCurrentUser(): string {
-  if (process.env.USER) {
-    return process.env.USER;
-  } else if (process.env.USERNAME) {
-    return process.env.USERNAME;
-  } else if (process.env.LOGNAME) {
-    return process.env.LOGNAME;
-  } else {
-    try {
-      return os.userInfo().username;
-    } catch (e) {
-      return 'Could not determine user';
-    }
-  }
-}
-
-const CONFIG_PATH = path.join(__dirname, '..', 'config.json');
-
-const defaultConfig: DefaultConfiguration = {
-    parentNodes: [],
-    childNodes: [],
-    deviceName: getCurrentUser()
+	MAC: string;
+	name: string;
 };
 
-function getOrCreateConfigFile (): DefaultConfiguration {
-    if (!fs.existsSync(CONFIG_PATH)) {
-        fs.writeFileSync(CONFIG_PATH, JSON.stringify(defaultConfig), {
-            encoding: 'utf-8'
-        });
+type DefaultConfiguration = {
+	parentNodes: ConfigurationNode[];
+	childNodes: ConfigurationNode[];
+	deviceName: string;
+};
 
-        return defaultConfig;
-    }
-
-    const str = fs.readFileSync(CONFIG_PATH, {
-        encoding: 'utf-8'
-    });
-
-    return JSON.parse(str);
+function getCurrentUser(): string {
+	if (process.env.USER) {
+		return process.env.USER;
+	} else if (process.env.USERNAME) {
+		return process.env.USERNAME;
+	} else if (process.env.LOGNAME) {
+		return process.env.LOGNAME;
+	} else {
+		try {
+			return os.userInfo().username;
+		} catch (e) {
+			return "Could not determine user";
+		}
+	}
 }
 
-function appendChildNode (MAC: string, deviceName: string): DefaultConfiguration {
-    let config = getOrCreateConfigFile();
+const CONFIG_PATH = path.join(__dirname, "..", "config.json");
 
-    config.childNodes.push({
-        MAC: MAC,
-        name: deviceName
-    });
+const defaultConfig: DefaultConfiguration = {
+	parentNodes: [],
+	childNodes: [],
+	deviceName: getCurrentUser(),
+};
 
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
-        encoding: 'utf-8'
-    });
+function getOrCreateConfigFile(): DefaultConfiguration {
+	if (!fs.existsSync(CONFIG_PATH)) {
+		fs.writeFileSync(CONFIG_PATH, JSON.stringify(defaultConfig), {
+			encoding: "utf-8",
+		});
 
-    return config;
+		return defaultConfig;
+	}
+
+	const str = fs.readFileSync(CONFIG_PATH, {
+		encoding: "utf-8",
+	});
+
+	return JSON.parse(str);
 }
 
-function appendParentNode (MAC: string, deviceName: string): DefaultConfiguration {
-    let config = getOrCreateConfigFile();
+function appendChildNode(
+	MAC: string,
+	deviceName: string,
+): DefaultConfiguration {
+	let config = getOrCreateConfigFile();
 
-    config.parentNodes.push({
-        MAC: MAC,
-        name: deviceName
-    });
+	config.childNodes.push({
+		MAC: MAC,
+		name: deviceName,
+	});
 
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
-        encoding: 'utf-8'
-    });
+	fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
+		encoding: "utf-8",
+	});
 
-    return config;
+	return config;
 }
 
-function removeChildNode (MAC: string): DefaultConfiguration {
-    let config = getOrCreateConfigFile();
+function appendParentNode(
+	MAC: string,
+	deviceName: string,
+): DefaultConfiguration {
+	let config = getOrCreateConfigFile();
 
-    for (let i = 0; i < config.childNodes.length; i++) {
-        if (config.childNodes[i].MAC === MAC) {
-            const a = config.childNodes.slice(0, i);
-            const b = config.childNodes.slice(i + 1);
+	config.parentNodes.push({
+		MAC: MAC,
+		name: deviceName,
+	});
 
-            config.childNodes = [...a, ...b];
+	fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
+		encoding: "utf-8",
+	});
 
-            break;
-        }
-    }
-
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
-        encoding: 'utf-8'
-    });
-
-    return config;
+	return config;
 }
 
-function removeParentNode (MAC: string): DefaultConfiguration {
-    let config = getOrCreateConfigFile();
+function removeChildNode(MAC: string): DefaultConfiguration {
+	let config = getOrCreateConfigFile();
 
-    for (let i = 0; i < config.parentNodes.length; i++) {
-        if (config.parentNodes[i].MAC === MAC) {
-            const a = config.parentNodes.slice(0, i);
-            const b = config.parentNodes.slice(i + 1);
+	for (let i = 0; i < config.childNodes.length; i++) {
+		if (config.childNodes[i].MAC === MAC) {
+			const a = config.childNodes.slice(0, i);
+			const b = config.childNodes.slice(i + 1);
 
-            config.parentNodes = [...a, ...b];
+			config.childNodes = [...a, ...b];
 
-            break;
-        }
-    }
+			break;
+		}
+	}
 
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
-        encoding: 'utf-8'
-    });
+	fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
+		encoding: "utf-8",
+	});
 
-    return config;
+	return config;
 }
 
-export { 
-    CONFIG_PATH,
-    getOrCreateConfigFile,
-    appendChildNode,
-    appendParentNode,
-    removeChildNode,
-    removeParentNode
+function removeParentNode(MAC: string): DefaultConfiguration {
+	let config = getOrCreateConfigFile();
+
+	for (let i = 0; i < config.parentNodes.length; i++) {
+		if (config.parentNodes[i].MAC === MAC) {
+			const a = config.parentNodes.slice(0, i);
+			const b = config.parentNodes.slice(i + 1);
+
+			config.parentNodes = [...a, ...b];
+
+			break;
+		}
+	}
+
+	fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
+		encoding: "utf-8",
+	});
+
+	return config;
 }
+
+export {
+	CONFIG_PATH,
+	getOrCreateConfigFile,
+	appendChildNode,
+	appendParentNode,
+	removeChildNode,
+	removeParentNode,
+};
