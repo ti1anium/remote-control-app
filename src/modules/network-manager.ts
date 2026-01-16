@@ -12,7 +12,8 @@ type NetworkPacket = {
 	active: boolean;
 };
 
-const BROADCAST_PORT = 9;
+const BROADCAST_PORT = 40000;
+const WAKE_PORT = 9;
 
 function getBroadcastAddress(): string {
 	const nets = os.networkInterfaces();
@@ -122,6 +123,7 @@ function createBroadcastListener(socket: dgram.Socket): EventEmitter {
 
 export {
 	BROADCAST_PORT,
+	WAKE_PORT,
 	getBroadcastAddress,
 	getMAC,
 	broadcastPacket,

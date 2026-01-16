@@ -151,15 +151,9 @@ app.on("ready", () => {
 
 	ipcMain.on("do-action", (_, MAC: string, action: string) => {});
 
-	if (os.platform() == "linux") {
-		socket.bind(0, '0.0.0.0', () => {
-			socket.setBroadcast(true);
-		});
-	} else {
-		socket.bind(networkManager.BROADCAST_PORT, () => {
-			socket.setBroadcast(true);
-		});
-	}
+	socket.bind(networkManager.BROADCAST_PORT, () => {
+		socket.setBroadcast(true);
+	});
 
 	const deviceMAC = networkManager.getMAC();
 
