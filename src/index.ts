@@ -216,7 +216,7 @@ app.on("ready", () => {
 			}
 		},
 	);
-	
+	console.log(networkManager.getBroadcastAddress());
 	setInterval(() => {
 		networkManager.broadcastPacket(socket, {
 			packetType: "fetch",
