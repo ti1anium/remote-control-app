@@ -14,6 +14,7 @@ type FoundDevice = {
 	isParentNode: boolean;
 	active: boolean;
 	ipAddress: string | null;
+	lastCallbackTime: number;
 };
 
 let tray: Tray | null = null;
@@ -40,6 +41,7 @@ app.on("ready", () => {
 					ipAddress: null,
 					isChildNode: true,
 					isParentNode: false,
+					lastCallbackTime: 0,
 				});
 			}
 		}
@@ -57,7 +59,14 @@ app.on("ready", () => {
 					ipAddress: null,
 					isChildNode: false,
 					isParentNode: true,
+					lastCallbackTime: 0,
 				});
+			}
+		}
+
+		for (let device of allDevices) {
+			if (Math.floor(Date.now() / 1000) - device.lastCallbackTime >= 10) {
+				device.active = false;
 			}
 		}
 
@@ -282,6 +291,7 @@ app.on("ready", () => {
 						config.parentNodes.findIndex(
 							(node) => node.MAC === data.senderMAC,
 						) !== -1,
+					lastCallbackTime: Math.floor(Date.now() / 1000)
 				};
 
 				if (deviceIndex === -1) {
