@@ -2,6 +2,7 @@ import { BrowserWindow, app, ipcMain, Menu, Tray, nativeImage } from "electron";
 import * as os from "os";
 import * as path from "path";
 import * as dgram from "dgram";
+import { exec } from "child_process";
 
 import * as configManager from "./modules/config-manager";
 import * as networkManager from "./modules/network-manager";
@@ -353,7 +354,68 @@ app.on("ready", () => {
 				const device = allDevices[index];
 				if (!device.isParentNode) return;
 
-				console.log(data);
+				let command: string | null = null;
+
+				switch (data.action) {
+					case "shutdown":
+						switch (os.platform()) {
+							case "linux":
+							case "darwin":
+								command = "shutdown -h now";
+								break;
+							case "win32":
+								command = "shutdown /s /t 00";
+								break;
+							default:
+								console.log("Unsupported OS for this command");
+								return;
+						}
+						break;
+					case "reboot":
+						switch (os.platform()) {
+							case "linux":
+							case "darwin":
+								command = "/sbin/reboot";
+								break;
+							case "win32":
+								command = "shutdown /r /t 00";
+								break;
+							default:
+								console.log("Unsupported OS for this command");
+								return;
+						}
+						break;
+					case "hibernate":
+						switch (os.platform()) {
+							case "linux":
+								command = "systemctl hibernate"
+								break;
+							case "darwin":
+								command = "pmset sleepnow";
+								break;
+							case "win32":
+								command = "shutdown /h";
+								break;
+							default:
+								console.log("Unsupported OS for this command");
+								return;
+						}
+						break;
+					default:
+						console.log("Received unexpected command: ", data);
+						return;
+				}
+
+				if (!command) return;
+
+				exec(command, (error, stdout, stderr) => {
+					if (error) {
+						console.error(`exec error: ${error}`);
+						return;
+					}
+					console.log(`stdout: ${stdout}`);
+					console.error(`stderr: ${stderr}`);
+				});
 			} catch (e) {
 				console.log("Action packet processing error: " + e);
 			}
