@@ -86,7 +86,7 @@ app.on("ready", () => {
 				width: 800,
 				height: 600,
 
-				autoHideMenuBar: true,
+				autoHideMenuBar: false,
 
 				webPreferences: {
 					preload: path.join(__dirname, "preload.js"),
@@ -159,7 +159,7 @@ app.on("ready", () => {
 
 	ipcMain.on("create-pair", (_, MAC: string) => {
 		const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
-		if (index !== -1) return;
+		if (index === -1) return;
 
 		console.log("Pair function A");
 
@@ -190,7 +190,7 @@ app.on("ready", () => {
 
 	ipcMain.on("break-pair", (_, MAC: string) => {
 		const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
-		if (index !== -1) return;
+		if (index === -1) return;
 
 		console.log("Unpair function A");
 
@@ -222,7 +222,7 @@ app.on("ready", () => {
 			if (action == null) return;
 
 			const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
-			if (index !== -1) return;
+			if (index === -1) return;
 
 			console.log("Action function A");
 
@@ -230,6 +230,8 @@ app.on("ready", () => {
 			if (!device.isChildNode) return;
 
 			if (action === "wake") {
+				console.log("Action function wake");
+
 				networkManager.broadcastWakePacket(socket, device.deviceMAC);
 
 				return;
