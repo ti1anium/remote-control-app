@@ -452,5 +452,9 @@ app.on("ready", () => {
 			action: null,
 			active: true,
 		});
+
+		setTimeout(() => {
+			updateDevices();
+		}, 1000);
 	}, 5000);
 });
