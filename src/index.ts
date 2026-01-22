@@ -380,5 +380,5 @@ app.on("ready", () => {
 			action: null,
 			active: true,
 		});
-	}, 10000);
+	}, 5000);
 });
