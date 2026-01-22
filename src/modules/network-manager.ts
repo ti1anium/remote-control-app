@@ -8,7 +8,7 @@ type NetworkPacket = {
 	senderName: string;
 	targetMAC: string | null;
 	packetType: "fetch" | "pair" | "unpair" | "action";
-	action: "shutdown" | "reboot" | "hibernate" | null;
+	action: "shutdown" | "reboot" | "hibernate" | "wake" | null;
 	active: boolean;
 };
 
@@ -129,5 +129,6 @@ export {
 	broadcastPacket,
 	broadcastWakePacket,
 	createBroadcastListener,
+	directPacket,
 	NetworkPacket,
 };

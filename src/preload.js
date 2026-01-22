@@ -5,12 +5,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('update-devices', (event, ...args) => callback(...args));
   },
   createPair: (MAC) => {
-    ipcRenderer.send("create-pair", MAC)
+    ipcRenderer.send("create-pair", MAC);
   },
   breakPair: (MAC) => {
-    ipcRenderer.send("break-pair", MAC)
+    ipcRenderer.send("break-pair", MAC);
   },
   doAction: (MAC, action) => {
-    ipcRenderer.send("do-action", MAC, action)
+    ipcRenderer.send("do-action", MAC, action);
   }
 });

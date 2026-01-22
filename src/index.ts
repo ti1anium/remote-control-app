@@ -61,7 +61,9 @@ app.on("ready", () => {
 		}
 
 		while (true) {
-			const i = allDevices.findIndex((device) => !device.active && !device.isChildNode);
+			const i = allDevices.findIndex(
+				(device) => !device.active && !device.isChildNode,
+			);
 			if (i === -1) break;
 
 			let a = allDevices.slice(0, i);
@@ -155,11 +157,80 @@ app.on("ready", () => {
 
 	tray.on("click", createWindow);
 
-	ipcMain.on("create-pair", (_, MAC: string) => {});
+	ipcMain.on("create-pair", (_, MAC: string) => {
+		const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
+		if (index !== -1) return;
 
-	ipcMain.on("break-pair", (_, MAC: string) => {});
+		const device = allDevices[index];
+		if (!device.active || device.ipAddress == null || device.isParentNode) return;
 
-	ipcMain.on("do-action", (_, MAC: string, action: string) => {});
+		config = configManager.appendParentNode(
+			device.deviceMAC,
+			device.deviceName,
+		);
+
+		networkManager.directPacket(socket, device.ipAddress, {
+			packetType: "pair",
+			senderMAC: deviceMAC,
+			senderName: config.deviceName,
+			targetMAC: device.deviceMAC,
+			action: null,
+			active: true,
+		});
+
+		updateDevices();
+	});
+
+	ipcMain.on("break-pair", (_, MAC: string) => {
+		const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
+		if (index !== -1) return;
+
+		const device = allDevices[index];
+		if (!device.active || device.ipAddress == null || !device.isParentNode) return;
+
+		config = configManager.removeParentNode(device.deviceMAC);
+
+		networkManager.directPacket(socket, device.ipAddress, {
+			packetType: "unpair",
+			senderMAC: deviceMAC,
+			senderName: config.deviceName,
+			targetMAC: device.deviceMAC,
+			action: null,
+			active: true,
+		});
+
+		updateDevices();
+	});
+
+	ipcMain.on(
+		"do-action",
+		(_, MAC: string, action: networkManager.NetworkPacket["action"]) => {
+			if (action == null) return;
+
+			const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
+			if (index !== -1) return;
+
+			const device = allDevices[index];
+			if (!device.isChildNode) return;
+
+			if (action === "wake") {
+				networkManager.broadcastWakePacket(socket, device.deviceMAC);
+
+				return;
+			}
+
+			if (!device.active || device.ipAddress == null) return;
+
+			networkManager.directPacket(socket, device.ipAddress, {
+				packetType: "action",
+				senderMAC: deviceMAC,
+				senderName: config.deviceName,
+				targetMAC: device.deviceMAC,
+				action: action,
+				active: true,
+			});
+		},
+	);
 
 	socket.bind(networkManager.BROADCAST_PORT, () => {
 		socket.setBroadcast(true);
@@ -209,6 +280,15 @@ app.on("ready", () => {
 		"pair",
 		(data: networkManager.NetworkPacket, rinfo: dgram.RemoteInfo) => {
 			try {
+				const index = allDevices.findIndex((v) => v.deviceMAC === data.senderMAC);
+				if (index !== -1) return;
+
+				const device = allDevices[index];
+				if (device.isChildNode) return;
+
+				config = configManager.appendChildNode(device.deviceMAC, device.deviceName);
+
+				updateDevices();
 			} catch (e) {
 				console.log("Pair packet processing error: " + e);
 			}
@@ -219,6 +299,15 @@ app.on("ready", () => {
 		"unpair",
 		(data: networkManager.NetworkPacket, rinfo: dgram.RemoteInfo) => {
 			try {
+				const index = allDevices.findIndex((v) => v.deviceMAC === data.senderMAC);
+				if (index !== -1) return;
+
+				const device = allDevices[index];
+				if (!device.isChildNode) return;
+
+				config = configManager.removeChildNode(device.deviceMAC);
+
+				updateDevices();
 			} catch (e) {
 				console.log("Unpair packet processing error: " + e);
 			}
@@ -229,12 +318,21 @@ app.on("ready", () => {
 		"action",
 		(data: networkManager.NetworkPacket, rinfo: dgram.RemoteInfo) => {
 			try {
+				const index = allDevices.findIndex((v) => v.deviceMAC === data.senderMAC);
+				if (index !== -1) return;
+
+				const device = allDevices[index];
+				if (!device.isParentNode) return;
+
+				console.log(data);
 			} catch (e) {
 				console.log("Action packet processing error: " + e);
 			}
 		},
 	);
-	console.log(networkManager.getBroadcastAddress());
+
+	console.log("Broadcast IP: ", networkManager.getBroadcastAddress());
+
 	setInterval(() => {
 		networkManager.broadcastPacket(socket, {
 			packetType: "fetch",

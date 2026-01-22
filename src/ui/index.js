@@ -3,15 +3,15 @@ const pairedContainer = document.getElementById("paired-devices-list");
 const foundContainer = document.getElementById("found-devices-list");
 
 function doAction (MAC, action) {
-
+    window.electronAPI.doAction(MAC, action);
 }
 
 function createPair (MAC) {
-
+    window.electronAPI.createPair(MAC);
 }
 
 function breakPair (MAC) {
-
+    window.electronAPI.breakPair(MAC);
 }
 
 function createDeviceElement (deviceName, deviceMAC, deviceState, isParent, isChild) {
@@ -24,13 +24,13 @@ function createDeviceElement (deviceName, deviceMAC, deviceState, isParent, isCh
         </div>
         <div>
             <p class="state-label ${deviceState}">${deviceState}</p>
-            <button>${isParent ? "Break Pair" : "Make as a parent node"}</button>
+            <button onclick="${isParent ? `breakPair('${deviceMAC}')` : `createPair('${deviceMAC}')`}">${isParent ? "Break Pair" : "Make as a parent node"}</button>
         </div>
         <div style="justify-content: end; display: ${isChild ? "flex" : "none"}">
-            <button>Wake</button>
-            <button>Shutdown</button>
-            <button>Reboot</button>
-            <button>Hibernate</button>
+            <button onclick="doAction('${deviceMAC}', 'wake')">Wake</button>
+            <button onclick="doAction('${deviceMAC}', 'shutdown')">Shutdown</button>
+            <button onclick="doAction('${deviceMAC}', 'reboot')">Reboot</button>
+            <button onclick="doAction('${deviceMAC}', 'hibernate')">Hibernate</button>
         </div>
     `;
 
