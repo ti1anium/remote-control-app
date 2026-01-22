@@ -303,7 +303,7 @@ app.on("ready", () => {
 				const index = allDevices.findIndex(
 					(v) => v.deviceMAC === data.senderMAC,
 				);
-				if (index !== -1) return;
+				if (index === -1) return;
 
 				const device = allDevices[index];
 				if (device.isChildNode) return;
@@ -327,7 +327,7 @@ app.on("ready", () => {
 				const index = allDevices.findIndex(
 					(v) => v.deviceMAC === data.senderMAC,
 				);
-				if (index !== -1) return;
+				if (index === -1) return;
 
 				const device = allDevices[index];
 				if (!device.isChildNode) return;
@@ -348,7 +348,7 @@ app.on("ready", () => {
 				const index = allDevices.findIndex(
 					(v) => v.deviceMAC === data.senderMAC,
 				);
-				if (index !== -1) return;
+				if (index === -1) return;
 
 				const device = allDevices[index];
 				if (!device.isParentNode) return;
