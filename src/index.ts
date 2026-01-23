@@ -1,4 +1,4 @@
-import { BrowserWindow, app, ipcMain, Menu, Tray, nativeImage } from "electron";
+import { BrowserWindow, app, ipcMain, Menu, Tray, nativeImage, Notification } from "electron";
 import * as os from "os";
 import * as path from "path";
 import * as dgram from "dgram";
@@ -457,4 +457,12 @@ app.on("ready", () => {
 			updateDevices();
 		}, 1000);
 	}, 5000);
+
+	const notification = new Notification ({
+		title: "App is closed but works in background",
+		body: "Right click the tray icon for options",
+		icon: icon
+	});
+
+	notification.show();
 });

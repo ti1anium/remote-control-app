@@ -41,6 +41,8 @@ function createDeviceElement (deviceName, deviceMAC, deviceState, isParent, isCh
 
 window.electronAPI.onUpdateData((devices) => {
     foundContainer.innerHTML = '';
+    pairedContainer.innerHTML = '';
+    listeningContainer.innerHTML = '';
 
     for (let i = 0; i < devices.length; i++) {
         let element = createDeviceElement(
@@ -51,6 +53,12 @@ window.electronAPI.onUpdateData((devices) => {
             devices[i].isChildNode
         );
 
-        foundContainer.appendChild(element);
+        if (devices[i].isParentNode) {
+            listeningContainer.appendChild(element);
+        } else if (devices[i].isChildNode) {
+            pairedContainer.appendChild(element);
+        } else {
+            foundContainer.appendChild(element);
+        }
     }
 });
