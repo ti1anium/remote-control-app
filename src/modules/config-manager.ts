@@ -1,3 +1,4 @@
+import { app } from 'electron';
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
@@ -29,7 +30,7 @@ function getCurrentUser(): string {
 	}
 }
 
-const CONFIG_PATH = path.join(__dirname, "..", "config.json");
+const CONFIG_PATH = path.join(app.getPath("userData"), "config.json");
 
 const defaultConfig: DefaultConfiguration = {
 	parentNodes: [],

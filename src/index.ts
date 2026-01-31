@@ -159,6 +159,8 @@ app.on("ready", () => {
 						active: false,
 					});
 
+					isQuitting = true;
+
 					app.quit();
 				},
 			},
@@ -171,8 +173,6 @@ app.on("ready", () => {
 		const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
 		if (index === -1) return;
 
-		console.log("Pair function A");
-
 		const device = allDevices[index];
 		if (!device.active || device.ipAddress == null || device.isParentNode)
 			return;
@@ -181,8 +181,6 @@ app.on("ready", () => {
 			device.deviceMAC,
 			device.deviceName,
 		);
-
-		console.log("Pair function B");
 
 		networkManager.directPacket(socket, device.ipAddress, {
 			packetType: "pair",
@@ -194,23 +192,17 @@ app.on("ready", () => {
 		});
 
 		updateDevices();
-
-		console.log("Pair function completed");
 	});
 
 	ipcMain.on("break-pair", (_, MAC: string) => {
 		const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
 		if (index === -1) return;
 
-		console.log("Unpair function A");
-
 		const device = allDevices[index];
 		if (!device.active || device.ipAddress == null || !device.isParentNode)
 			return;
 
 		config = configManager.removeParentNode(device.deviceMAC);
-
-		console.log("Unpair function B");
 
 		networkManager.directPacket(socket, device.ipAddress, {
 			packetType: "unpair",
@@ -222,8 +214,6 @@ app.on("ready", () => {
 		});
 
 		updateDevices();
-
-		console.log("Unpair function completed");
 	});
 
 	ipcMain.on(
@@ -234,14 +224,10 @@ app.on("ready", () => {
 			const index = allDevices.findIndex((v) => v.deviceMAC === MAC);
 			if (index === -1) return;
 
-			console.log("Action function A");
-
 			const device = allDevices[index];
 			if (!device.isChildNode) return;
 
 			if (action === "wake") {
-				console.log("Action function wake");
-
 				networkManager.broadcastWakePacket(socket, device.deviceMAC);
 
 				return;
@@ -257,8 +243,6 @@ app.on("ready", () => {
 				action: action,
 				active: true,
 			});
-
-			console.log("Action function completed");
 		},
 	);
 

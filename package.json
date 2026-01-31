@@ -4,10 +4,12 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "clean": "rimraf dist",
+    "compile": "npx tsc",
     "copy-assets": "cpy \"src/**/*\" dist --ignore \"**/*.{ts,js}\" --parents --cwd .",
-    "build": "npx tsc && npm run copy-assets",
-    "dev": "npm run build && npm run start",
-    "start": "electron dist/index.js"
+    "build:ts": "npm run clean && npm run compile && npm run copy-assets",
+    "dev": "npm run build:ts && electron dist/index.js",
+    "dist": "npm run build:ts && electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +19,28 @@
     "@types/node": "^25.0.8",
     "cpy-cli": "^6.0.0",
     "electron": "^39.2.7",
+    "electron-builder": "^26.4.0",
+    "rimraf": "^6.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "build": {
+    "appId": "com.example.remotecontrol",
+    "productName": "Remote Control App",
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }
