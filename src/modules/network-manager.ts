@@ -21,6 +21,7 @@ function getBroadcastAddress(): string {
 		for (const net of nets[name] || []) {
 			if (net.family === "IPv4" && !net.internal) {
 				const parts = net.address.split(".");
+				if (parts[0] !== "192") continue;
 				parts[3] = "255";
 				return parts.join(".");
 			}

@@ -288,7 +288,7 @@ app.on("ready", () => {
 			} catch (e) {
 				console.log("Fetch packet processing error: " + e);
 			}
-		},
+		}
 	);
 
 	dataReceivedEvent.on(
